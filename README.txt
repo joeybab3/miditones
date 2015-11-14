@@ -141,3 +141,4 @@ Update on 5 April 2015: Now code.google.org is going away, so I've migrated this
 
 Update on 6 April 2015: I made the source code friendlier to more compilers. The executables are, of course, for Windows.
 
+Update 14 November 2015: Added several features, Midify.bat automatically creates a .ino for you as well as a .bin
