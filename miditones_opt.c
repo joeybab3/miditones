@@ -693,7 +693,7 @@ int main(int argc,char *argv[]) {
     unsigned long earliest_time;
     int notes_skipped = 0;
 
-    printf("MIDITONES V%s, (C) 2011,2015 Len Shustek\n", VERSION);
+    printf("MIDITONES V%s, (C) ArduinoPlays\n", VERSION);
     printf("See the source code for license information.\n\n");
     if (argc == 1) { /* no arguments */
         SayUsage(argv[0]);
@@ -752,7 +752,7 @@ int main(int argc,char *argv[]) {
             outfile = fopen(filename, "wb");
         }
         else {
-            strlcat(filename, ".c", MAXPATH);
+            strlcat(filename, ".ino", MAXPATH);
             outfile = fopen(filename, "w");
         }
         if (!outfile) {
@@ -762,6 +762,7 @@ int main(int argc,char *argv[]) {
         if (!binaryoutput) {  /* create header of C file that initializes score data */
             time_t rawtime;
             time (&rawtime);
+			fprintf(outfile, "#include <Playtune.h>");
             fprintf(outfile, "// Playtune bytestream for file \"%s.mid\" ", filebasename);
             fprintf(outfile, "created by MIDITONES V%s on %s", VERSION, asctime(localtime(&rawtime)));
             print_command_line(argc,argv);
@@ -950,6 +951,81 @@ int main(int argc,char *argv[]) {
         else {
             fprintf(outfile, "0x%02x};\n// This score contains %ld bytes, and %d tone generator%s used.\n", CMD_STOP, outfile_bytecount, num_tonegens_used, num_tonegens_used == 1 ? " is" : "s are");
             if (notes_skipped) fprintf(outfile, "// %d notes had to be skipped.\n", notes_skipped);
+			fprintf(outfile, "Playtune pt;");
+			fprintf(outfile, "void setup() {");
+			fprintf(outfile, "pinMode(A0, OUTPUT);");
+			fprintf(outfile, "pinMode(A1, OUTPUT);");
+			fprintf(outfile, "pinMode(A2, OUTPUT);");
+			fprintf(outfile, "pinMode(A3, OUTPUT);");
+			fprintf(outfile, "pinMode(A4, OUTPUT);");
+			fprintf(outfile, "pinMode(A5, OUTPUT);");
+			fprintf(outfile, "pinMode(A6, OUTPUT);");
+			fprintf(outfile, "pinMode(A7, OUTPUT);");
+			fprintf(outfile, "digitalWrite(A0, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A1, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A2, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A3, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A4, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A5, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A6, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A7, HIGH);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A0, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A1, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A2, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A3, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A4, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A5, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A6, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "digitalWrite(A7, LOW);");
+			fprintf(outfile, "delay(100);");
+			fprintf(outfile, "// Enable all 16 MEGA timers for notes that are output on digital pins 43, 45, 47, 49, 51, and 53.");
+			fprintf(outfile, "// Those pins should be wired to 500-ohm resistors, the other ends of which should be connected together");
+			fprintf(outfile, "// to one terminal of an 8-ohm speaker.  The other terminal of the speaker should be connected to ground.  ");
+			fprintf(outfile, "// No other hardware is needed!");
+			fprintf(outfile, " ");
+			fprintf(outfile, "pt.tune_initchan (2); //V");
+			fprintf(outfile, "pt.tune_initchan (3); //V");
+			fprintf(outfile, "pt.tune_initchan (4); //V");
+			fprintf(outfile, "pt.tune_initchan (5); //V");
+			fprintf(outfile, "pt.tune_initchan (6); //X");
+			fprintf(outfile, "pt.tune_initchan (7); //V");
+			fprintf(outfile, "pt.tune_initchan (8); //V");
+			fprintf(outfile, "pt.tune_initchan (9); //V");
+			fprintf(outfile, "pt.tune_initchan (10); //V");
+			fprintf(outfile, "pt.tune_initchan (11); //V");
+			fprintf(outfile, "pt.tune_initchan (12); //V");
+			fprintf(outfile, "pt.tune_initchan (13); //V");
+			fprintf(outfile, " ");
+			fprintf(outfile, " ");
+			fprintf(outfile, "#define DBUG 1");
+			fprintf(outfile, "#if DBUG");
+			fprintf(outfile, "	Serial.begin(9600);");
+			fprintf(outfile, "	Serial.println(\"Debug\");");
+			fprintf(outfile, "#endif");
+			fprintf(outfile, "}");
+			fprintf(outfile, " ");
+			fprintf(outfile, "void loop () {");
+			fprintf(outfile, " ");
+			fprintf(outfile, "	pt.tune_playscore (score); /* start playing */");
+			fprintf(outfile, "	while (pt.tune_playing) ;   /* wait here until playing stops */");
+			fprintf(outfile, "	pt.tune_delay(1000);        /* wait a second */");
+			fprintf(outfile, "}");
+
         }
         printf ("  %s %d tone generators were used.\n", num_tonegens_used < num_tonegens ? "Only":"All", num_tonegens_used);
         if (notes_skipped) printf("  %d notes were skipped because there weren't enough tone generators.\n", notes_skipped);
