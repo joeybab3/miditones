@@ -752,6 +752,7 @@ int main(int argc,char *argv[]) {
             outfile = fopen(filename, "wb");
         }
         else {
+			strlcat(filename, ".done", MAXPATH);
             strlcat(filename, ".ino", MAXPATH);
             outfile = fopen(filename, "w");
         }
